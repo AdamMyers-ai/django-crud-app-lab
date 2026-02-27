@@ -12,3 +12,9 @@ from .forms import ExerciseEntryForm, SignUpForm
 
 class Home(TemplateView):
     template_name = "home.html"
+
+
+class SignUp(CreateView):
+    form_class = SignUpForm
+    template_name = "registration/signup.html"
+    success_url = "/workouts/"
