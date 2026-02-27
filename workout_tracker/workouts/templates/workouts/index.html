@@ -1,0 +1,13 @@
+{% extends "base.html" %} {% block content %}
+<h1>Your Workouts</h1>
+<a href="{% url 'workouts_create' %}">+ New Workout</a>
+<ul>
+  {% for w in workouts %}
+  <li>
+    <a href="{% url 'workouts_detail' w.id %}">{{w.date}} - {{w.title}}</a>
+  </li>
+  {% empty %}
+  <li>No workouts yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -18,3 +18,18 @@ class SignUp(CreateView):
     form_class = SignUpForm
     template_name = "registration/signup.html"
     success_url = "/workouts/"
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        login(self.request, self.object)
+        return response
+
+
+class WorkoutList(LoginRequiredMixin, ListView):
+    model = Workout
+    template_name = "workouts/index.html"
+    context_object_name = "workouts"
+    ordering = ["-date"]
+
+    def get_queryset(self):
+        return Workout.objects.filter(user=self.request.user).order_by("-date")

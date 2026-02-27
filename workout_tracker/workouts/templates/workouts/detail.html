@@ -1,0 +1,59 @@
+{% extends 'base.html' %} {% block content %}
+<h1>{{ workout.title }}</h1>
+<p><strong>Date:</strong> {{ workout.date }}</p>
+<p><strong>Duration:</strong> {{ workout.duration_minutes }} min</p>
+<p><strong>Notes:</strong> {{ workout.notes|default:"(none)" }}</p>
+
+<p>
+  <a href="{% url 'workouts_update' workout.id %}">Edit</a> |
+  <a href="{% url 'workouts_delete' workout.id %}">Delete</a>
+</p>
+
+<hr />
+
+<h2>Exercises</h2>
+
+<h3>Add Exercise Entry</h3>
+<form method="post" action="{% url 'entries_create' workout.id %}">
+  {% csrf_token %} {{ entry_form.as_p }}
+  <button type="submit">Add</button>
+</form>
+
+<h3>Entries</h3>
+<ul>
+  {% for e in workout.entries.all %}
+  <li>
+    {{ e.name }} — {{ e.sets }}x{{ e.reps }} @ {{ e.weight }} {% if e.rpe %}(RPE
+    {{ e.rpe }}){% endif %}
+    <br />
+    <a href="{% url 'entries_update' e.id %}">Edit</a> |
+    <a href="{% url 'entries_delete' e.id %}">Delete</a>
+  </li>
+  {% empty %}
+  <li>No entries yet.</li>
+  {% endfor %}
+</ul>
+
+<hr />
+
+<h2>Tags</h2>
+<p>
+  <strong>Current:</strong>
+  {% for t in workout.tags.all %} {{ t.name }}
+  <a href="{% url 'unassoc_tag' workout.id t.id %}">[remove]</a>
+  {% if not forloop.last %}, {% endif %} {% empty %} (none) {% endfor %}
+</p>
+
+<h3>Add a tag</h3>
+<ul>
+  {% for t in available_tags %}
+  <li>{{ t.name }} <a href="{% url 'assoc_tag' workout.id t.id %}">Add</a></li>
+  {% empty %}
+  <li>
+    No available tags. Create some in
+    <a href="{% url 'tags_create' %}">Tags</a>.
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
+ 
