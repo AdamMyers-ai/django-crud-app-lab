@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Delete Workout</h1>
+<p>Delete "{{ object.title }}" from {{ object.date }}?</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Confirm Delete</button>
+</form>
+
+<p><a href="{% url 'workouts_detail' object.id %}">Cancel</a></p>
+{% endblock %}

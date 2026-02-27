@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{% if object %}Edit Exercise Entry{% else %}Add Exercise Entry{% endif %}</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+</form>
+
+{% if object %}
+<p><a href="{% url 'workouts_detail' object.workout.id %}">Cancel</a></p>
+{% else %}
+<p><a href="{% url 'workouts_index' %}">Back</a></p>
+{% endif %}
+{% endblock %}
