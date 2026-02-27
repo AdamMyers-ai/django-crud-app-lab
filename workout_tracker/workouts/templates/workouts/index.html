@@ -1,13 +1,26 @@
 {% extends "base.html" %} {% block content %}
 <h1>Your Workouts</h1>
-<a href="{% url 'workouts_create' %}">+ New Workout</a>
-<ul>
-  {% for w in workouts %}
-  <li>
-    <a href="{% url 'workouts_detail' w.id %}">{{w.date}} - {{w.title}}</a>
-  </li>
-  {% empty %}
-  <li>No workouts yet.</li>
-  {% endfor %}
-</ul>
-{% endblock %}
+<p>
+  <a class="btn btn-primary" href="{% url 'workouts_create' %}"
+    >+ New Workout</a
+  >
+</p>
+
+{% for w in workouts %}
+<div class="card">
+  <div class="card-title">
+    <a href="{% url 'workouts_detail' w.id %}">
+      <strong>{{ w.date }}</strong> — {{ w.title }}
+    </a>
+    {% if w.is_pr %}
+    <span class="badge badge-pr">✅ PR</span>
+    {% endif %}
+  </div>
+
+  {% if w.program_name %}
+  <div class="small muted">Program: {{ w.program_name }}</div>
+  {% endif %}
+</div>
+{% empty %}
+<div class="card">No workouts yet.</div>
+{% endfor %} {% endblock %}

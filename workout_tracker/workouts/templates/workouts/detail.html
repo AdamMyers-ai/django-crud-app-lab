@@ -18,10 +18,12 @@
   <strong>PR Day:</strong> {% if workout.is_pr %}✅ Yes{% else %}—{% endif %}
 </p>
 
-<p>
-  <a href="{% url 'workouts_update' workout.id %}">Edit</a> |
-  <a href="{% url 'workouts_delete' workout.id %}">Delete</a>
-</p>
+<div class="btn-row">
+  <a class="btn" href="{% url 'workouts_update' workout.id %}">Edit</a>
+  <a class="btn btn-danger" href="{% url 'workouts_delete' workout.id %}"
+    >Delete</a
+  >
+</div>
 
 <hr />
 
