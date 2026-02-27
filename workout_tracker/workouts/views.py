@@ -57,7 +57,17 @@ def workouts_detail(request, workout_id):
 
 class WorkoutCreate(LoginRequiredMixin, CreateView):
     model = Workout
-    fields = ["date", "title", "duration_minutes", "notes"]
+    fields = [
+        "date",
+        "title",
+        "program_name",
+        "duration_minutes",
+        "bodyweight",
+        "sleep_hours",
+        "mood",
+        "is_pr",
+        "notes",
+    ]
     template_name = "workouts/form.html"
 
     def form_valid(self, form):
@@ -67,7 +77,18 @@ class WorkoutCreate(LoginRequiredMixin, CreateView):
 
 class WorkoutUpdate(LoginRequiredMixin, UpdateView):
     model = Workout
-    fields = ["date", "title", "duration_minutes", "notes", "tags"]
+    fields = [
+        "date",
+        "title",
+        "program_name",
+        "duration_minutes",
+        "bodyweight",
+        "sleep_hours",
+        "mood",
+        "is_pr",
+        "notes",
+        "tags",
+    ]
     template_name = "workouts/form.html"
 
     def get_queryset(self):

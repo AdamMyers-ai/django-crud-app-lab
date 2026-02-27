@@ -1,9 +1,22 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <h1>{{ workout.title }}</h1>
 <p><strong>Date:</strong> {{ workout.date }}</p>
 <p><strong>Duration:</strong> {{ workout.duration_minutes }} min</p>
 <p><strong>Notes:</strong> {{ workout.notes|default:"(none)" }}</p>
+<p><strong>Program:</strong> {{ workout.program_name|default:"(none)" }}</p>
+<p>
+  <strong>Bodyweight:</strong>
+  {% if workout.bodyweight %}{{ workout.bodyweight }}{% else %}(n/a){% endif %}
+</p>
+<p>
+  <strong>Sleep:</strong>
+  {% if workout.sleep_hours %}{{ workout.sleep_hours }} hrs{% else %}(n/a){%
+  endif %}
+</p>
+<p><strong>Mood:</strong> {{ workout.get_mood_display|default:"(n/a)" }}</p>
+<p>
+  <strong>PR Day:</strong> {% if workout.is_pr %}✅ Yes{% else %}—{% endif %}
+</p>
 
 <p>
   <a href="{% url 'workouts_update' workout.id %}">Edit</a> |
@@ -16,8 +29,7 @@
 
 <h3>Add Exercise Entry</h3>
 <form method="post" action="{% url 'entries_create' workout.id %}">
-  {% csrf_token %}
-  {{ entry_form.as_p }}
+  {% csrf_token %} {{ entry_form.as_p }}
   <button type="submit">Add</button>
 </form>
 
@@ -25,8 +37,8 @@
 <ul>
   {% for e in workout.entries.all %}
   <li>
-    {{ e.name }} - {{ e.sets }}x{{ e.reps }} @ {{ e.weight }}{% if e.rpe %}
-    (RPE {{ e.rpe }}){% endif %}
+    {{ e.name }} - {{ e.sets }}x{{ e.reps }} @ {{ e.weight }}{% if e.rpe %} (RPE
+    {{ e.rpe }}){% endif %}
     <br />
     <a href="{% url 'entries_update' e.id %}">Edit</a> |
     <a href="{% url 'entries_delete' e.id %}">Delete</a>
@@ -41,13 +53,9 @@
 <h2>Tags</h2>
 <p>
   <strong>Current:</strong>
-  {% for t in workout.tags.all %}
-  {{ t.name }}
+  {% for t in workout.tags.all %} {{ t.name }}
   <a href="{% url 'unassoc_tag' workout.id t.id %}">[remove]</a>
-  {% if not forloop.last %}, {% endif %}
-  {% empty %}
-  (none)
-  {% endfor %}
+  {% if not forloop.last %}, {% endif %} {% empty %} (none) {% endfor %}
 </p>
 
 <h3>Add a tag</h3>

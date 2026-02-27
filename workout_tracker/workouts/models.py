@@ -15,10 +15,31 @@ class Tag(models.Model):
 
 
 class Workout(models.Model):
+    MOOD_CHOICES = [
+        ("terrible", "Terrible"),
+        ("bad", "Bad"),
+        ("ok", "Ok"),
+        ("good", "Good"),
+        ("great", "Great"),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateField()
     title = models.CharField(max_length=100)
+
+    program_name = models.CharField(max_length=100, blank=True)
+
     duration_minutes = models.PositiveIntegerField(default=0)
+    bodyweight = models.DecimalField(
+        max_digits=5, decimal_places=1, null=True, blank=True
+    )
+    sleep_hours = models.DecimalField(
+        max_digits=3, decimal_places=1, null=True, blank=True
+    )
+    mood = models.CharField(max_length=10, choices=MOOD_CHOICES, blank=True)
+
+    is_pr = models.BooleanField(default=True)
+
     notes = models.TextField(blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
 
