@@ -1,8 +1,33 @@
-{% extends "base.html" %} {% block content %}
-<h1>Workout Tracker</h1>
-<p>Log workouts, track exercise, ang tag your sessions.</p>
-{% if user.is_authenticated %}
-<a href="{% url 'workouts_index' %}">Go to your workouts</a>
-{% else %}
-<a href="{% url 'login' %}">Login</a> or
-<a href="{% url 'signup' %}">Create an account</a> {% endif %} {% endblock %}
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Training journal</p>
+    <h1>Workout Tracker</h1>
+    <p class="lede">
+      Log sessions, track performance, and keep your training notes organized in
+      one clean place.
+    </p>
+
+    <div class="btn-row">
+      {% if user.is_authenticated %}
+      <a class="btn btn-primary" href="{% url 'workouts_index' %}">View Workouts</a>
+      <a class="btn" href="{% url 'tags_index' %}">Manage Tags</a>
+      {% else %}
+      <a class="btn btn-primary" href="{% url 'signup' %}">Create Account</a>
+      <a class="btn" href="{% url 'login' %}">Login</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <article class="card">
+    <p class="eyebrow">What you can track</p>
+    <h2>Keep the basics tight.</h2>
+    <ul class="feature-list">
+      <li>Record workouts with notes, duration, and recovery details.</li>
+      <li>Track each exercise entry with sets, reps, weight, and RPE.</li>
+      <li>Use tags to organize phases, focus days, and recurring sessions.</li>
+    </ul>
+  </article>
+</section>
+{% endblock %}

@@ -1,16 +1,25 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>{% if object %}Edit Workout{% else %}New Workout{% endif %}</h1>
+<section class="page-heading page-heading--compact">
+  <div>
+    <p class="eyebrow">Workout</p>
+    <h1>{% if object %}Edit Workout{% else %}New Workout{% endif %}</h1>
+    <p class="lede">Capture the details of a training session.</p>
+  </div>
+</section>
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Save</button>
-</form>
-
-{% if object %}
-<p><a href="{% url 'workouts_detail' object.id %}">Cancel</a></p>
-{% else %}
-<p><a href="{% url 'workouts_index' %}">Cancel</a></p>
-{% endif %}
+<section class="card form-card">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="btn-row">
+      <button class="btn btn-primary" type="submit">Save Workout</button>
+      {% if object %}
+      <a class="btn" href="{% url 'workouts_detail' object.id %}">Cancel</a>
+      {% else %}
+      <a class="btn" href="{% url 'workouts_index' %}">Cancel</a>
+      {% endif %}
+    </div>
+  </form>
+</section>
 {% endblock %}

@@ -1,26 +1,44 @@
-{% extends "base.html" %} {% block content %}
-<h1>Your Workouts</h1>
-<p>
-  <a class="btn btn-primary" href="{% url 'workouts_create' %}"
-    >+ New Workout</a
-  >
-</p>
-
-{% for w in workouts %}
-<div class="card">
-  <div class="card-title">
-    <a href="{% url 'workouts_detail' w.id %}">
-      <strong>{{ w.date }}</strong> — {{ w.title }}
-    </a>
-    {% if w.is_pr %}
-    <span class="badge badge-pr">✅ PR</span>
-    {% endif %}
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">Training log</p>
+    <h1>Your Workouts</h1>
+    <p class="lede">A clean history of every session, ordered from latest to oldest.</p>
   </div>
+  <a class="btn btn-primary" href="{% url 'workouts_create' %}">New Workout</a>
+</section>
 
-  {% if w.program_name %}
-  <div class="small muted">Program: {{ w.program_name }}</div>
-  {% endif %}
-</div>
-{% empty %}
-<div class="card">No workouts yet.</div>
-{% endfor %} {% endblock %}
+<section class="card-grid">
+  {% for w in workouts %}
+  <article class="card workout-card">
+    <div class="card-title">
+      <div>
+        <p class="eyebrow">{{ w.date|date:"M j, Y" }}</p>
+        <h2>
+          <a class="card-link" href="{% url 'workouts_detail' w.id %}">{{ w.title }}</a>
+        </h2>
+      </div>
+      {% if w.is_pr %}
+      <span class="badge badge-pr">PR Day</span>
+      {% endif %}
+    </div>
+
+    <div class="meta-row">
+      <span>{{ w.duration_minutes }} min</span>
+      {% if w.program_name %}
+      <span>{{ w.program_name }}</span>
+      {% endif %}
+      {% if w.mood %}
+      <span>{{ w.get_mood_display }}</span>
+      {% endif %}
+    </div>
+  </article>
+  {% empty %}
+  <article class="card empty-state">
+    <h2>No workouts yet</h2>
+    <p class="muted">Start with your first session and build the log from there.</p>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

@@ -1,12 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Sign Up</h1>
+<section class="page-heading page-heading--compact">
+  <div>
+    <p class="eyebrow">Get started</p>
+    <h1>Sign Up</h1>
+    <p class="lede">Create an account and start building your workout history.</p>
+  </div>
+</section>
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Create Account</button>
-</form>
+<section class="card form-card">
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="btn-row">
+      <button class="btn btn-primary" type="submit">Create Account</button>
+    </div>
+  </form>
 
-<p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+  <p class="small muted">
+    Already have an account? <a class="text-link" href="{% url 'login' %}">Login</a>
+  </p>
+</section>
 {% endblock %}

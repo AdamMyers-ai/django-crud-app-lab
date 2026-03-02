@@ -38,7 +38,7 @@ class Workout(models.Model):
     )
     mood = models.CharField(max_length=10, choices=MOOD_CHOICES, blank=True)
 
-    is_pr = models.BooleanField(default=True)
+    is_pr = models.BooleanField(default=False)
 
     notes = models.TextField(blank=True)
     tags = models.ManyToManyField(Tag, blank=True)

@@ -1,4 +1,3 @@
-{% load static %}
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Workout Tracker</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=studio-journal-1" />
   </head>
   <body>
     <header class="site-header">
@@ -22,7 +21,7 @@
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
           {% else %}
           <a class="nav-link" href="{% url 'login' %}">Login</a>
-          <a class="nav-link btn btn-primary" href="{% url 'signup' %}"
+          <a class="nav-link nav-link-primary" href="{% url 'signup' %}"
             >Sign Up</a
           >
           {% endif %}

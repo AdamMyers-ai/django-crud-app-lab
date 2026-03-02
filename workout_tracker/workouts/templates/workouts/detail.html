@@ -1,74 +1,143 @@
-{% extends "base.html" %} {% block content %}
-<h1>{{ workout.title }}</h1>
-<p><strong>Date:</strong> {{ workout.date }}</p>
-<p><strong>Duration:</strong> {{ workout.duration_minutes }} min</p>
-<p><strong>Notes:</strong> {{ workout.notes|default:"(none)" }}</p>
-<p><strong>Program:</strong> {{ workout.program_name|default:"(none)" }}</p>
-<p>
-  <strong>Bodyweight:</strong>
-  {% if workout.bodyweight %}{{ workout.bodyweight }}{% else %}(n/a){% endif %}
-</p>
-<p>
-  <strong>Sleep:</strong>
-  {% if workout.sleep_hours %}{{ workout.sleep_hours }} hrs{% else %}(n/a){%
-  endif %}
-</p>
-<p><strong>Mood:</strong> {{ workout.get_mood_display|default:"(n/a)" }}</p>
-<p>
-  <strong>PR Day:</strong> {% if workout.is_pr %}✅ Yes{% else %}—{% endif %}
-</p>
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading page-heading--compact">
+  <div>
+    <p class="eyebrow">Workout detail</p>
+    <h1>{{ workout.title }}</h1>
+    <p class="lede">
+      {{ workout.date|date:"F j, Y" }}
+      {% if workout.program_name %} / {{ workout.program_name }}{% endif %}
+    </p>
+  </div>
 
-<div class="btn-row">
-  <a class="btn" href="{% url 'workouts_update' workout.id %}">Edit</a>
-  <a class="btn btn-danger" href="{% url 'workouts_delete' workout.id %}"
-    >Delete</a
-  >
-</div>
+  <div class="btn-row">
+    <a class="btn" href="{% url 'workouts_update' workout.id %}">Edit</a>
+    <a class="btn btn-danger" href="{% url 'workouts_delete' workout.id %}">Delete</a>
+  </div>
+</section>
 
-<hr />
+<section class="detail-grid">
+  <article class="card">
+    <p class="eyebrow">Session snapshot</p>
+    <h2>At a glance</h2>
+    <div class="stat-grid">
+      <div class="stat">
+        <span class="stat-label">Duration</span>
+        <strong>{{ workout.duration_minutes }} min</strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Mood</span>
+        <strong>
+          {% if workout.mood %}{{ workout.get_mood_display }}{% else %}n/a{% endif %}
+        </strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Bodyweight</span>
+        <strong>
+          {% if workout.bodyweight %}{{ workout.bodyweight }}{% else %}n/a{% endif %}
+        </strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Sleep</span>
+        <strong>
+          {% if workout.sleep_hours %}{{ workout.sleep_hours }} hrs{% else %}n/a{% endif %}
+        </strong>
+      </div>
+      <div class="stat">
+        <span class="stat-label">PR Day</span>
+        <strong>{% if workout.is_pr %}Yes{% else %}No{% endif %}</strong>
+      </div>
+    </div>
+  </article>
 
-<h2>Exercises</h2>
+  <article class="card">
+    <p class="eyebrow">Notes</p>
+    <h2>Session details</h2>
+    <div class="prose">
+      {% if workout.notes %}
+      <p>{{ workout.notes|linebreaksbr }}</p>
+      {% else %}
+      <p>No notes for this session yet.</p>
+      {% endif %}
+    </div>
+  </article>
+</section>
 
-<h3>Add Exercise Entry</h3>
-<form method="post" action="{% url 'entries_create' workout.id %}">
-  {% csrf_token %} {{ entry_form.as_p }}
-  <button type="submit">Add</button>
-</form>
+<section class="split-grid">
+  <article class="card">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Exercises</p>
+        <h2>Entries</h2>
+      </div>
+    </div>
 
-<h3>Entries</h3>
-<ul>
-  {% for e in workout.entries.all %}
-  <li>
-    {{ e.name }} - {{ e.sets }}x{{ e.reps }} @ {{ e.weight }}{% if e.rpe %} (RPE
-    {{ e.rpe }}){% endif %}
-    <br />
-    <a href="{% url 'entries_update' e.id %}">Edit</a> |
-    <a href="{% url 'entries_delete' e.id %}">Delete</a>
-  </li>
-  {% empty %}
-  <li>No entries yet.</li>
-  {% endfor %}
-</ul>
+    <form method="post" action="{% url 'entries_create' workout.id %}">
+      {% csrf_token %}
+      {{ entry_form.as_p }}
+      <div class="btn-row">
+        <button class="btn btn-primary" type="submit">Add Entry</button>
+      </div>
+    </form>
 
-<hr />
+    <div class="entry-list">
+      {% for e in workout.entries.all %}
+      <article class="list-item">
+        <div class="list-item-head">
+          <div>
+            <h3>{{ e.name }}</h3>
+            <p class="muted">
+              {{ e.sets }} x {{ e.reps }} @ {{ e.weight }}
+              {% if e.rpe %} / RPE {{ e.rpe }}{% endif %}
+            </p>
+          </div>
+          <div class="inline-actions">
+            <a href="{% url 'entries_update' e.id %}">Edit</a>
+            <a href="{% url 'entries_delete' e.id %}">Delete</a>
+          </div>
+        </div>
+        {% if e.notes %}
+        <p class="small muted">{{ e.notes }}</p>
+        {% endif %}
+      </article>
+      {% empty %}
+      <article class="list-item">
+        <p class="muted">No entries yet.</p>
+      </article>
+      {% endfor %}
+    </div>
+  </article>
 
-<h2>Tags</h2>
-<p>
-  <strong>Current:</strong>
-  {% for t in workout.tags.all %} {{ t.name }}
-  <a href="{% url 'unassoc_tag' workout.id t.id %}">[remove]</a>
-  {% if not forloop.last %}, {% endif %} {% empty %} (none) {% endfor %}
-</p>
+  <article class="card">
+    <p class="eyebrow">Organization</p>
+    <h2>Tags</h2>
 
-<h3>Add a tag</h3>
-<ul>
-  {% for t in available_tags %}
-  <li>{{ t.name }} <a href="{% url 'assoc_tag' workout.id t.id %}">Add</a></li>
-  {% empty %}
-  <li>
-    No available tags. Create some in
-    <a href="{% url 'tags_create' %}">Tags</a>.
-  </li>
-  {% endfor %}
-</ul>
+    <div class="chip-row">
+      {% for t in workout.tags.all %}
+      <span class="chip">
+        {{ t.name }}
+        <a href="{% url 'unassoc_tag' workout.id t.id %}">Remove</a>
+      </span>
+      {% empty %}
+      <span class="muted">No tags attached yet.</span>
+      {% endfor %}
+    </div>
+
+    <div class="link-list">
+      {% for t in available_tags %}
+      <div class="list-item list-item-head">
+        <strong>{{ t.name }}</strong>
+        <a href="{% url 'assoc_tag' workout.id t.id %}">Add</a>
+      </div>
+      {% empty %}
+      <div class="list-item">
+        <p class="muted">
+          No tags available.
+          <a class="text-link" href="{% url 'tags_create' %}">Create one in Tags.</a>
+        </p>
+      </div>
+      {% endfor %}
+    </div>
+  </article>
+</section>
 {% endblock %}

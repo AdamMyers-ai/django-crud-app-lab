@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Delete Exercise Entry</h1>
-<p>Delete "{{ object.name }}" from "{{ object.workout.title }}"?</p>
+<section class="card form-card">
+  <p class="eyebrow">Danger zone</p>
+  <h1>Delete Exercise Entry</h1>
+  <p class="lede">Delete "{{ object.name }}" from "{{ object.workout.title }}"?</p>
 
-<form method="post">
-  {% csrf_token %}
-  <button type="submit">Confirm Delete</button>
-</form>
-
-<p><a href="{% url 'workouts_detail' object.workout.id %}">Cancel</a></p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="btn-row">
+      <button class="btn btn-danger" type="submit">Confirm Delete</button>
+      <a class="btn" href="{% url 'workouts_detail' object.workout.id %}">Cancel</a>
+    </div>
+  </form>
+</section>
 {% endblock %}
