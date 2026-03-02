@@ -2,12 +2,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from .models import Workout, ExerciseEntry, Tag
-from .forms import ExerciseEntryForm, SignUpForm
+from .forms import ExerciseEntryForm, SignUpForm, TagForm
 
 
 class Home(TemplateView):
@@ -40,7 +41,7 @@ def workouts_detail(request, workout_id):
     workout = get_object_or_404(Workout, id=workout_id, user=request.user)
     entry_form = ExerciseEntryForm()
 
-    available_tags = Tag.objects.exclude(
+    available_tags = Tag.objects.filter(user=request.user).exclude(
         id__in=workout.tags.all().values_list("id", flat=True)
     )
 
@@ -93,6 +94,11 @@ class WorkoutUpdate(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         return Workout.objects.filter(user=self.request.user)
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields["tags"].queryset = Tag.objects.filter(user=self.request.user)
+        return form
 
 
 class WorkoutDelete(LoginRequiredMixin, DeleteView):
@@ -153,23 +159,43 @@ class TagList(LoginRequiredMixin, ListView):
     context_object_name = "tags"
     ordering = ["name"]
 
+    def get_queryset(self):
+        return Tag.objects.filter(user=self.request.user).order_by("name")
+
 
 @login_required
 def tags_detail(request, tag_id):
-    tag = get_object_or_404(Tag, id=tag_id)
+    tag = get_object_or_404(Tag, id=tag_id, user=request.user)
     return render(request, "tags/detail.html", {"tag": tag})
 
 
 class TagCreate(LoginRequiredMixin, CreateView):
     model = Tag
-    fields = ["name"]
+    form_class = TagForm
     template_name = "tags/form.html"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
 
 
 class TagUpdate(LoginRequiredMixin, UpdateView):
     model = Tag
-    fields = ["name"]
+    form_class = TagForm
     template_name = "tags/form.html"
+
+    def get_queryset(self):
+        return Tag.objects.filter(user=self.request.user)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
 
 
 class TagDelete(LoginRequiredMixin, DeleteView):
@@ -177,16 +203,23 @@ class TagDelete(LoginRequiredMixin, DeleteView):
     success_url = "/tags/"
     template_name = "tags/confirm_delete.html"
 
+    def get_queryset(self):
+        return Tag.objects.filter(user=self.request.user)
+
 
 @login_required
+@require_POST
 def assoc_tag(request, workout_id, tag_id):
     workout = get_object_or_404(Workout, id=workout_id, user=request.user)
-    workout.tags.add(tag_id)
+    tag = get_object_or_404(Tag, id=tag_id, user=request.user)
+    workout.tags.add(tag)
     return redirect("workouts_detail", workout_id=workout_id)
 
 
 @login_required
+@require_POST
 def unassoc_tag(request, workout_id, tag_id):
     workout = get_object_or_404(Workout, id=workout_id, user=request.user)
-    workout.tags.remove(tag_id)
+    tag = get_object_or_404(Tag, id=tag_id, user=request.user)
+    workout.tags.remove(tag)
     return redirect("workouts_detail", workout_id=workout_id)

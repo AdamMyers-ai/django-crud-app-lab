@@ -114,10 +114,15 @@
 
     <div class="chip-row">
       {% for t in workout.tags.all %}
-      <span class="chip">
-        {{ t.name }}
-        <a href="{% url 'unassoc_tag' workout.id t.id %}">Remove</a>
-      </span>
+      <form
+        class="chip inline-form"
+        method="post"
+        action="{% url 'unassoc_tag' workout.id t.id %}"
+      >
+        {% csrf_token %}
+        <span>{{ t.name }}</span>
+        <button class="text-button" type="submit">Remove</button>
+      </form>
       {% empty %}
       <span class="muted">No tags attached yet.</span>
       {% endfor %}
@@ -125,10 +130,15 @@
 
     <div class="link-list">
       {% for t in available_tags %}
-      <div class="list-item list-item-head">
+      <form
+        class="list-item list-item-head inline-form"
+        method="post"
+        action="{% url 'assoc_tag' workout.id t.id %}"
+      >
+        {% csrf_token %}
         <strong>{{ t.name }}</strong>
-        <a href="{% url 'assoc_tag' workout.id t.id %}">Add</a>
-      </div>
+        <button class="text-button" type="submit">Add</button>
+      </form>
       {% empty %}
       <div class="list-item">
         <p class="muted">

@@ -1,11 +1,23 @@
-from django.db import models
+from decimal import Decimal
+
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.urls import reverse
 
 
 # Create your models here.
 class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "name"], name="unique_user_tag_name"
+            )
+        ]
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -29,12 +41,25 @@ class Workout(models.Model):
 
     program_name = models.CharField(max_length=100, blank=True)
 
-    duration_minutes = models.PositiveIntegerField(default=0)
+    duration_minutes = models.PositiveIntegerField(
+        default=0, validators=[MaxValueValidator(1440)]
+    )
     bodyweight = models.DecimalField(
-        max_digits=5, decimal_places=1, null=True, blank=True
+        max_digits=5,
+        decimal_places=1,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0.0"))],
     )
     sleep_hours = models.DecimalField(
-        max_digits=3, decimal_places=1, null=True, blank=True
+        max_digits=3,
+        decimal_places=1,
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(Decimal("0.0")),
+            MaxValueValidator(Decimal("24.0")),
+        ],
     )
     mood = models.CharField(max_length=10, choices=MOOD_CHOICES, blank=True)
 
@@ -57,8 +82,22 @@ class ExerciseEntry(models.Model):
     name = models.CharField(max_length=100)
     sets = models.PositiveIntegerField(default=1)
     reps = models.PositiveIntegerField(default=1)
-    weight = models.DecimalField(max_digits=6, decimal_places=2, default=0)
-    rpe = models.DecimalField(max_digits=3, decimal_places=1, null=True, blank=True)
+    weight = models.DecimalField(
+        max_digits=6,
+        decimal_places=2,
+        default=0,
+        validators=[MinValueValidator(Decimal("0.0"))],
+    )
+    rpe = models.DecimalField(
+        max_digits=3,
+        decimal_places=1,
+        null=True,
+        blank=True,
+        validators=[
+            MinValueValidator(Decimal("0.0")),
+            MaxValueValidator(Decimal("10.0")),
+        ],
+    )
     notes = models.CharField(max_length=255, blank=True)
 
     def __str__(self):

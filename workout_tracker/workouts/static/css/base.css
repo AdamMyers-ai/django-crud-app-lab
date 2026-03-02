@@ -67,6 +67,10 @@ a:hover {
   align-items: center;
 }
 
+.nav-form {
+  margin: 0;
+}
+
 .nav-link,
 .nav-text {
   display: inline-block;
@@ -78,6 +82,11 @@ a:hover {
   color: #ffffff;
   text-decoration: none;
   background: rgba(255, 255, 255, 0.1);
+}
+
+button.nav-link {
+  border: 0;
+  cursor: pointer;
 }
 
 .nav-link:hover {
@@ -225,6 +234,10 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.inline-form {
+  margin: 0;
 }
 
 .section-heading {
@@ -382,6 +395,21 @@ li {
 
 .text-link {
   font-weight: bold;
+}
+
+.text-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--link);
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.text-button:hover {
+  color: var(--link-hover);
+  background: transparent;
 }
 
 hr {
